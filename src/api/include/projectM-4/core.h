@@ -60,6 +60,23 @@ typedef void* (*projectm_load_proc)(const char* name, void* user_data);
 PROJECTM_EXPORT projectm_handle projectm_create();
 
 /**
+ * @brief Makes projectM's random choices repeatable.
+ *
+ * With a seed other than 0, every random choice projectM makes from then on -- the noise
+ * textures, transitions, random textures, colour offsets and preset durations -- follows from
+ * that seed, so the same calls with the same audio and frame times draw the same frames. 0 goes
+ * back to seeding from the system, which is the default. Call it before projectm_create() to
+ * cover the noise textures made there. It applies to every instance in the process.
+ *
+ * Expressions' rand() is MilkDrop's own fixed sequence either way, and shaders' random values
+ * come from the C library's rand(), which srand() seeds.
+ *
+ * @param seed The seed, or 0 for the system's.
+ * @since 4.2.0 (M9 fork)
+ */
+PROJECTM_EXPORT void projectm_set_random_seed(unsigned int seed);
+
+/**
  * @brief Creates a new projectM instance using the given function to resolve GL api functions.
  *
  * The load_proc function accepts a function name and a user data pointer.

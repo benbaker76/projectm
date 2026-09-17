@@ -8,11 +8,13 @@
 #include <GLSLGenerator.h>
 #include <HLSLParser.h>
 #include <Logging.hpp>
+#include <Random.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
 
 #include <algorithm>
+#include <random>
 #include <regex>
 #include <set>
 
@@ -21,7 +23,13 @@ namespace MilkdropPreset {
 
 using libprojectM::MilkdropPreset::MilkdropStaticShaders;
 
-static auto floatRand = []() { return static_cast<float>(rand() % 7381) / 7380.0f; };
+// The shaders' random values. projectM's own generator, one per thread, rather than the C
+// library's rand(): that is one sequence for the whole process, which anything else calling it
+// moves along, and which Random's seed cannot reach.
+static auto floatRand = []() {
+    thread_local std::mt19937 generator(Random::NewSeed());
+    return static_cast<float>(generator() % 7381) / 7380.0f;
+};
 
 MilkdropShader::MilkdropShader(ShaderType type)
     : m_type(type)

@@ -11,7 +11,12 @@ TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration, double hard
     , m_softCutDuration(smoothDuration)
     , m_hardCutDuration(hardcutDuration)
 {
-    UpdateTimers();
+    // The start is time zero by definition. This used to call UpdateTimers(), which read the
+    // clock and left the few microseconds since m_startTime in m_currentTime; the first frame
+    // then counted back from that, a slightly negative frame length even with the time set by
+    // the app, and the audio smoothing that divides by it came out different on every run.
+    m_presetFrameA++;
+    m_presetFrameB++;
 }
 
 void TimeKeeper::SetFrameTime(double secondsSinceStart)

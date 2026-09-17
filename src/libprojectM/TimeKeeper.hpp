@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Random.hpp"
+
 #include <chrono>
 #include <random>
 
@@ -109,8 +111,7 @@ private:
     /* The first ticks value of the application */
     std::chrono::high_resolution_clock::time_point m_startTime{std::chrono::high_resolution_clock::now()};
 
-    std::random_device m_randomDevice{};
-    std::mt19937 m_randomGenerator{m_randomDevice()};
+    std::mt19937 m_randomGenerator{Random::NewSeed()};
 
     double m_userSpecifiedTime{-1.0}; //!< User-specifed run time. If set to a value >= 0.0, this time is used instead of the system clock.
 

@@ -6,6 +6,7 @@
 #include "Renderer/Texture.hpp"
 
 #include <Logging.hpp>
+#include <Random.hpp>
 #include <Utils.hpp>
 
 #include <stb_image.h>
@@ -284,8 +285,7 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
 {
     std::string selectedFilename;
 
-    std::random_device rndDevice;
-    std::default_random_engine rndEngine(rndDevice());
+    std::default_random_engine rndEngine(Random::NewSeed());
 
     ScanTextures();
 

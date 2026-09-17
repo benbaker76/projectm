@@ -2,6 +2,8 @@
 
 #include "BuiltInTransitionsResources.hpp"
 
+#include <Random.hpp>
+
 namespace libprojectM {
 namespace Renderer {
 
@@ -12,7 +14,7 @@ TransitionShaderManager::TransitionShaderManager()
                            CompileTransitionShader(kTransitionShaderBuiltInSweepGlsl330),
                            CompileTransitionShader(kTransitionShaderBuiltInWarpGlsl330),
                            CompileTransitionShader(kTransitionShaderBuiltInZoomBlurGlsl330)})
-    , m_mersenneTwister(m_randomDevice())
+    , m_mersenneTwister(Random::NewSeed())
 {
 }
 

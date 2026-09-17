@@ -30,7 +30,6 @@ private:
 
     std::vector<std::shared_ptr<Shader>> m_transitionShaders; //!< Currently loaded and compiled transition shaders.
 
-    std::random_device m_randomDevice; //!< Seed for the random number generator
     std::mt19937 m_mersenneTwister; //!< Random engine to select shader
 };
 

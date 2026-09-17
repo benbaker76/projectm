@@ -4,6 +4,7 @@
 #include "Renderer/Shader.hpp"
 
 #include <Preset.hpp>
+#include <Random.hpp>
 
 #include <glm/glm.hpp>
 
@@ -80,7 +81,7 @@ private:
 
     glm::ivec4 m_staticRandomValues{}; //!< Four random integers, remaining static during the whole transition.
 
-    std::random_device m_randomDevice; //!< Seed for the random number generator
+    std::mt19937 m_random{Random::NewSeed()}; //!< The transition's random numbers, seeded once
 };
 
 } // namespace Renderer

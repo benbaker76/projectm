@@ -5,6 +5,7 @@
 #include <projectM-4/projectM.h>
 
 #include <Logging.hpp>
+#include <Random.hpp>
 
 #include <Audio/AudioConstants.hpp>
 #include <Renderer/Platform/GLResolver.hpp>
@@ -69,6 +70,11 @@ PROJECTM_EXPORT char* projectm_alloc_string_from_std_string(const std::string& s
 void projectm_free_string(const char* str)
 {
     delete[] str;
+}
+
+void projectm_set_random_seed(unsigned int seed)
+{
+    libprojectM::Random::SetSeed(seed);
 }
 
 projectm_handle projectm_create()

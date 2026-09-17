@@ -27,8 +27,7 @@ PresetTransition::PresetTransition(const std::shared_ptr<Shader>& transitionShad
 
     m_mesh.Update();
 
-    std::mt19937 rand32(m_randomDevice());
-    m_staticRandomValues = {rand32(), rand32(), rand32(), rand32()};
+    m_staticRandomValues = {m_random(), m_random(), m_random(), m_random()};
 }
 
 auto PresetTransition::IsDone(double currentFrameTime) const -> bool
@@ -53,7 +52,7 @@ void PresetTransition::Draw(const Preset& oldPreset,
         return;
     }
 
-    std::mt19937 rand32(m_randomDevice());
+    auto& rand32 = m_random;
 
     // Calculate progress values
     const auto secondsSinceStart = currentFrameTime - m_transitionStartTime;
