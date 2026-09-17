@@ -105,6 +105,16 @@ PROJECTM_EXPORT void projectm_get_shader_program_stats(unsigned int* compiled, u
 PROJECTM_EXPORT void projectm_get_shader_translation_stats(unsigned int* translated, unsigned int* reused);
 
 /**
+ * @brief A hash of the GLSL of every translation made so far, independent of their order.
+ *
+ * For checking that a change to the translation leaves what it produces alone: load the same
+ * presets before and after and compare.
+ *
+ * @since 4.2.0 (M9 fork)
+ */
+PROJECTM_EXPORT unsigned long long projectm_get_shader_translation_digest(void);
+
+/**
  * @brief Creates a new projectM instance using the given function to resolve GL api functions.
  *
  * The load_proc function accepts a function name and a user data pointer.

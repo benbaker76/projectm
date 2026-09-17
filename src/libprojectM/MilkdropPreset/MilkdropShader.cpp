@@ -54,9 +54,16 @@ public:
 
     static void Store(const std::string& key, const std::string& glsl)
     {
+        // what was made, whatever the order: for checking a change leaves translations alone
+        uint64_t hash = 1469598103934665603ull;
+        for (unsigned char c : glsl)
+        {
+            hash = (hash ^ c) * 1099511628211ull;
+        }
         auto& cache = Get();
         std::lock_guard<std::mutex> guard(cache.m_lock);
         cache.m_translated++;
+        cache.m_digest += hash;
         if (cache.m_index.find(key) != cache.m_index.end())
         {
             return;
@@ -78,6 +85,13 @@ public:
         reused = cache.m_reused;
     }
 
+    static auto Digest() -> uint64_t
+    {
+        auto& cache = Get();
+        std::lock_guard<std::mutex> guard(cache.m_lock);
+        return cache.m_digest;
+    }
+
 private:
     static constexpr size_t Capacity = 32;
 
@@ -92,6 +106,7 @@ private:
     std::unordered_map<std::string, std::list<std::pair<std::string, std::string>>::iterator> m_index;
     unsigned int m_translated{};
     unsigned int m_reused{};
+    uint64_t m_digest{};
 };
 
 } // namespace
@@ -99,6 +114,11 @@ private:
 void TranslationCounts(unsigned int& translated, unsigned int& reused)
 {
     TranslationCache::Counts(translated, reused);
+}
+
+auto TranslationDigest() -> uint64_t
+{
+    return TranslationCache::Digest();
 }
 
 using libprojectM::MilkdropPreset::MilkdropStaticShaders;

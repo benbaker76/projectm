@@ -79,6 +79,11 @@ void projectm_set_random_seed(unsigned int seed)
     libprojectM::Random::SetSeed(seed);
 }
 
+unsigned long long projectm_get_shader_translation_digest(void)
+{
+    return libprojectM::MilkdropPreset::TranslationDigest();
+}
+
 void projectm_get_shader_translation_stats(unsigned int* translated, unsigned int* reused)
 {
     unsigned int t = 0;

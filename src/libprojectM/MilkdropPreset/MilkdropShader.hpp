@@ -31,6 +31,11 @@ class PresetState;
  */
 void TranslationCounts(unsigned int& translated, unsigned int& reused);
 
+/**
+ * @brief A hash of every translation made, the same whatever order they were made in.
+ */
+auto TranslationDigest() -> uint64_t;
+
 class MilkdropShader
 {
 public:
