@@ -68,13 +68,28 @@ PROJECTM_EXPORT projectm_handle projectm_create();
  * back to seeding from the system, which is the default. Call it before projectm_create() to
  * cover the noise textures made there. It applies to every instance in the process.
  *
- * Expressions' rand() is MilkDrop's own fixed sequence either way, and shaders' random values
- * come from the C library's rand(), which srand() seeds.
+ * Expressions' rand() is MilkDrop's own fixed sequence either way. The shaders' random values
+ * follow from the seed too.
  *
  * @param seed The seed, or 0 for the system's.
  * @since 4.2.0 (M9 fork)
  */
 PROJECTM_EXPORT void projectm_set_random_seed(unsigned int seed);
+
+/**
+ * @brief How many preset shader programs were compiled, and how many times a program already
+ *        linked from the same sources was used instead.
+ *
+ * Presets' warp and composite programs are shared between shaders with the same sources, across every instance in the
+ * process and every thread whose OpenGL context shares objects: compiling a preset's shaders is
+ * most of what switching to it costs, so a preset loaded again, or loaded ahead of time by
+ * another instance, is cheaper. These counts show how often that happened.
+ *
+ * @param compiled Receives the programs compiled and linked. May be NULL.
+ * @param reused Receives the times a linked program was reused instead. May be NULL.
+ * @since 4.2.0 (M9 fork)
+ */
+PROJECTM_EXPORT void projectm_get_shader_program_stats(unsigned int* compiled, unsigned int* reused);
 
 /**
  * @brief Creates a new projectM instance using the given function to resolve GL api functions.

@@ -1,5 +1,7 @@
 #include "Shader.hpp"
 
+#include "Renderer/ProgramCache.hpp"
+
 #include <Logging.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -15,15 +17,50 @@ Shader::Shader()
 
 Shader::~Shader()
 {
-    if (m_shaderProgram)
+    ReleaseProgram();
+}
+
+void Shader::ReleaseProgram()
+{
+    if (m_shaderProgram && !(m_programShared && ProgramCache::Release(m_shaderProgram)))
     {
         glDeleteProgram(m_shaderProgram);
     }
+    m_shaderProgram = 0;
+    m_programShared = false;
 }
 
 void Shader::CompileProgram(const std::string& vertexShaderSource,
                             const std::string& fragmentShaderSource)
 {
+    Compile(vertexShaderSource, fragmentShaderSource, false);
+}
+
+void Shader::CompileSharedProgram(const std::string& vertexShaderSource,
+                                  const std::string& fragmentShaderSource)
+{
+    Compile(vertexShaderSource, fragmentShaderSource, true);
+}
+
+void Shader::Compile(const std::string& vertexShaderSource, const std::string& fragmentShaderSource, bool shared)
+{
+    // Already linked from the same sources, by this instance or one on another thread: use that.
+    auto cached = shared ? ProgramCache::Acquire(vertexShaderSource, fragmentShaderSource) : 0;
+    if (cached)
+    {
+        ReleaseProgram();
+        m_shaderProgram = cached;
+        m_programShared = true;
+        m_uniformLocations.clear();
+        return;
+    }
+    if (m_programShared || !m_shaderProgram)
+    {
+        // compiled before into a program others use: this one needs its own
+        ReleaseProgram();
+        m_shaderProgram = glCreateProgram();
+    }
+
     auto vertexShader = CompileShader(vertexShaderSource, GL_VERTEX_SHADER);
     auto fragmentShader = CompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
 
@@ -42,8 +79,13 @@ void Shader::CompileProgram(const std::string& vertexShaderSource,
 
     GLint programLinked;
     glGetProgramiv(m_shaderProgram, GL_LINK_STATUS, &programLinked);
+    if (shared)
+    {
+        ProgramCache::CountCompiled();
+    }
     if (programLinked == GL_TRUE)
     {
+        m_programShared = shared && ProgramCache::Register(vertexShaderSource, fragmentShaderSource, m_shaderProgram);
         return;
     }
 

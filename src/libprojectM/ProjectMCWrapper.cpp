@@ -9,6 +9,7 @@
 
 #include <Audio/AudioConstants.hpp>
 #include <Renderer/Platform/GLResolver.hpp>
+#include <Renderer/ProgramCache.hpp>
 
 #include <projectM-4/parameters.h>
 #include <projectM-4/render_opengl.h>
@@ -75,6 +76,21 @@ void projectm_free_string(const char* str)
 void projectm_set_random_seed(unsigned int seed)
 {
     libprojectM::Random::SetSeed(seed);
+}
+
+void projectm_get_shader_program_stats(unsigned int* compiled, unsigned int* reused)
+{
+    unsigned int c = 0;
+    unsigned int r = 0;
+    libprojectM::Renderer::ProgramCache::Counts(c, r);
+    if (compiled)
+    {
+        *compiled = c;
+    }
+    if (reused)
+    {
+        *reused = r;
+    }
 }
 
 projectm_handle projectm_create()

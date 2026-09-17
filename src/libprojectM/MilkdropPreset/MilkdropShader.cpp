@@ -702,11 +702,11 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     // Compile the preset shader fragment shader with the standard vertex shader and cross our fingers.
     if (m_type == ShaderType::WarpShader)
     {
-        m_shader.CompileProgram(MilkdropStaticShaders::Get()->GetPresetWarpVertexShader(), generator.GetResult());
+        m_shader.CompileSharedProgram(MilkdropStaticShaders::Get()->GetPresetWarpVertexShader(), generator.GetResult());
     }
     else
     {
-        m_shader.CompileProgram(MilkdropStaticShaders::Get()->GetPresetCompVertexShader(), generator.GetResult());
+        m_shader.CompileSharedProgram(MilkdropStaticShaders::Get()->GetPresetCompVertexShader(), generator.GetResult());
     }
 }
 

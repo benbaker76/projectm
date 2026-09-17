@@ -46,6 +46,8 @@ add_library(Renderer OBJECT
         RenderContext.hpp
         Sampler.cpp
         Sampler.hpp
+        ProgramCache.cpp
+        ProgramCache.hpp
         Shader.cpp
         Shader.hpp
         ShaderCache.cpp

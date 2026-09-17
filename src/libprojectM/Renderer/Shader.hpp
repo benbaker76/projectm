@@ -71,6 +71,10 @@ public:
      */
     ~Shader();
 
+    // A Shader owns its program, or a share of one in the ProgramCache: never copied.
+    Shader(const Shader&) = delete;
+    auto operator=(const Shader&) -> Shader& = delete;
+
     /**
      * @brief Compiles a vertex and fragment shader into a program.
      * @throws ShaderException Thrown if compilation of a shader or program linking failed.
@@ -79,6 +83,18 @@ public:
      */
     void CompileProgram(const std::string& vertexShaderSource,
                         const std::string& fragmentShaderSource);
+
+    /**
+     * @brief Compiles a program others may share: one already linked from the same sources is
+     *        used instead, and this one is offered to the ProgramCache for them.
+     *
+     * Only for a program whose uniforms are all set before each draw by whoever draws with it --
+     * a preset's warp and composite shaders. Uniform values belong to the program, so one set once
+     * and relied on afterwards would be changed under its feet by another Shader, possibly on
+     * another thread.
+     */
+    void CompileSharedProgram(const std::string& vertexShaderSource,
+                              const std::string& fragmentShaderSource);
 
     /**
      * @brief Validates that the program can run in the current state.
@@ -204,7 +220,15 @@ private:
      */
     auto UniformLocation(const char* uniform) const -> GLint;
 
+    /**
+     * @brief Lets go of the program: back to the ProgramCache if it came from there, else deleted.
+     */
+    void ReleaseProgram();
+
+    void Compile(const std::string& vertexShaderSource, const std::string& fragmentShaderSource, bool shared);
+
     GLuint m_shaderProgram{}; //!< The program ID.
+    bool m_programShared{false}; //!< The program is the ProgramCache's, which other Shaders may use too.
 
     mutable std::map<std::string, GLint, std::less<>> m_uniformLocations; //!< Locations asked for so far.
 };
