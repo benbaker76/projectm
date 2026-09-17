@@ -14,6 +14,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 namespace libprojectM {
 namespace Renderer {
@@ -194,7 +195,18 @@ private:
      */
     auto CompileShader(const std::string& source, GLenum type) -> GLuint;
 
+    /**
+     * @brief A uniform's location, asked of the driver only the first time.
+     *
+     * Every uniform is set by name, and a preset sets dozens a frame; asking the driver each
+     * time was a string lookup inside it for every one. The names are compared as string
+     * views, so a lookup builds no strings. Uniforms that do not exist are remembered too.
+     */
+    auto UniformLocation(const char* uniform) const -> GLint;
+
     GLuint m_shaderProgram{}; //!< The program ID.
+
+    mutable std::map<std::string, GLint, std::less<>> m_uniformLocations; //!< Locations asked for so far.
 };
 
 } // namespace Renderer
