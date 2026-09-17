@@ -10,6 +10,7 @@
 #include <Audio/AudioConstants.hpp>
 #include <Renderer/Platform/GLResolver.hpp>
 #include <Renderer/ProgramCache.hpp>
+#include <MilkdropPreset/MilkdropShader.hpp>
 
 #include <projectM-4/parameters.h>
 #include <projectM-4/render_opengl.h>
@@ -76,6 +77,21 @@ void projectm_free_string(const char* str)
 void projectm_set_random_seed(unsigned int seed)
 {
     libprojectM::Random::SetSeed(seed);
+}
+
+void projectm_get_shader_translation_stats(unsigned int* translated, unsigned int* reused)
+{
+    unsigned int t = 0;
+    unsigned int r = 0;
+    libprojectM::MilkdropPreset::TranslationCounts(t, r);
+    if (translated)
+    {
+        *translated = t;
+    }
+    if (reused)
+    {
+        *reused = r;
+    }
 }
 
 void projectm_get_shader_program_stats(unsigned int* compiled, unsigned int* reused)

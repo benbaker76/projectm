@@ -92,6 +92,19 @@ PROJECTM_EXPORT void projectm_set_random_seed(unsigned int seed);
 PROJECTM_EXPORT void projectm_get_shader_program_stats(unsigned int* compiled, unsigned int* reused);
 
 /**
+ * @brief How many preset shaders were translated from HLSL to GLSL, and how many times the
+ *        translation was found already done.
+ *
+ * Translations are kept process-wide, keyed by the shader code and everything else the
+ * translation reads, so a preset loaded again, or ahead of time by another instance, skips it.
+ *
+ * @param translated Receives the shaders translated. May be NULL.
+ * @param reused Receives the times a translation was reused. May be NULL.
+ * @since 4.2.0 (M9 fork)
+ */
+PROJECTM_EXPORT void projectm_get_shader_translation_stats(unsigned int* translated, unsigned int* reused);
+
+/**
  * @brief Creates a new projectM instance using the given function to resolve GL api functions.
  *
  * The load_proc function accepts a function name and a user data pointer.

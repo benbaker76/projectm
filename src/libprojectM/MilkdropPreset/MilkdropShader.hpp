@@ -25,6 +25,12 @@ class PresetState;
  * @brief Holds a warp or composite shader of Milkdrop presets.
  * Also does the required shader translation from HLSL to GLSL using hlslparser.
  */
+/**
+ * @brief How many preset shaders were translated from HLSL, and how many times a translation was
+ *        found already done instead.
+ */
+void TranslationCounts(unsigned int& translated, unsigned int& reused);
+
 class MilkdropShader
 {
 public:
