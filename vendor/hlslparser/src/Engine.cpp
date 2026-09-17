@@ -69,18 +69,38 @@ bool String_EqualNoCase(const char * a, const char * b) {
 #endif
 }
 
+// Every character reading a double from a stream can accept, in either C++ library: libstdc++
+// takes digits, signs, a point and an exponent; libc++ also gathers hex digits, x, p, and the
+// letters of inf and nan before it converts. Whitespace comes first. A stream stops at the first
+// character outside these, so the leading run of them is all it will ever read.
+static inline bool iss_number_char(char c) {
+    return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F') ||
+           c == '+' || c == '-' || c == '.' || c == 'x' || c == 'X' || c == 'p' || c == 'P' ||
+           c == 'i' || c == 'I' || c == 'n' || c == 'N';
+}
+
 static inline double iss_strtod(const char * in, char ** end) {
     char * in_var = const_cast<char *>(in);
+    // The stream used to be made from the whole rest of the source, which it copies: the tokenizer
+    // asks at every number, so translating a shader was quadratic in its length. It is made from
+    // the run a stream could read at all, which parses the same and ends in the same place.
+    const char * run = in;
+    while (*run == ' ' || *run == '\t' || *run == '\n' || *run == '\r' || *run == '\v' || *run == '\f') {
+        run++;
+    }
+    while (iss_number_char(*run)) {
+        run++;
+    }
     double df;
-    std::istringstream iss(in);
-    iss.imbue(std::locale("C"));
+    std::istringstream iss(std::string(in, run));
+    iss.imbue(std::locale::classic());
     iss >> df;
     if(iss.fail()) {
         *end = in_var;
         return 0.0;
     }
     if(iss.eof()) {
-        *end = in_var + strlen(in);
+        *end = in_var + (run - in);
         return df;
     }
 
