@@ -120,6 +120,9 @@ private:
 
     int m_viewportWidth{};  //!< Last known viewport width.
     int m_viewportHeight{}; //!< Last known viewport height.
+    float m_aspectX{};      //!< Last known horizontal aspect.
+    float m_aspectY{};      //!< Last known vertical aspect.
+    bool m_gridChanged{true}; //!< The grid was rebuilt and has not been uploaded since.
 
     Renderer::Mesh m_warpMesh;                                                                         //!< The Warp effect mesh
     Renderer::VertexBuffer<RadiusAngle> m_radiusAngleBuffer{Renderer::VertexBufferUsage::StreamDraw};  //!< Vertex attribute buffer for radius and angle values.

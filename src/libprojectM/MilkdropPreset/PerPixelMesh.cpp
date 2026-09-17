@@ -126,11 +126,21 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
         m_warpMesh.Indices().Resize(m_gridSizeX * m_gridSizeY * 6);
     }
     else if (m_viewportWidth == presetState.renderContext.viewportSizeX &&
-             m_viewportHeight == presetState.renderContext.viewportSizeY)
+             m_viewportHeight == presetState.renderContext.viewportSizeY &&
+             m_aspectX == presetState.renderContext.aspectX &&
+             m_aspectY == presetState.renderContext.aspectY)
     {
         // Nothing changed, just go on to the dynamic calculation.
         return;
     }
+
+    // The size this mesh is for. These were compared above but never stored, so every frame
+    // rebuilt the whole grid -- a hypot and an atan2 per vertex, every index -- and uploaded it.
+    m_viewportWidth = presetState.renderContext.viewportSizeX;
+    m_viewportHeight = presetState.renderContext.viewportSizeY;
+    m_aspectX = presetState.renderContext.aspectX;
+    m_aspectY = presetState.renderContext.aspectY;
+    m_gridChanged = true;
 
     const float aspectX = presetState.renderContext.aspectX;
     const float aspectY = presetState.renderContext.aspectY;
@@ -272,8 +282,14 @@ void PerPixelMesh::CalculateMesh(const PresetState& presetState, const PerFrameC
         }
     }
 
-    m_warpMesh.Update();
-    m_radiusAngleBuffer.Update();
+    // The grid, its indices and each vertex's radius and angle only change when the mesh is
+    // rebuilt; the rest is this frame's.
+    if (m_gridChanged)
+    {
+        m_warpMesh.Update();
+        m_radiusAngleBuffer.Update();
+        m_gridChanged = false;
+    }
     m_zoomRotWarpBuffer.Update();
     m_centerBuffer.Update();
     m_distanceBuffer.Update();
